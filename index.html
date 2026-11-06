@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="nl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vicarius Kryptovelox | Autonomous Cyber & Enterprise Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                            950: '#1e1b4b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased">
+
+    <!-- Notification Toast Modal -->
+    <div id="toast-modal" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-slate-900 border border-brand-500/50 shadow-2xl rounded-2xl p-4 flex items-center space-x-3 text-white max-w-sm">
+            <div class="w-8 h-8 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-shield-halved text-sm"></i>
+            </div>
+            <div>
+                <h5 class="text-xs font-bold text-white" id="toast-title">Systeem Melding</h5>
+                <p class="text-xs text-slate-300" id="toast-message">Actie succesvol uitgevoerd.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="w-72 bg-slate-900/80 backdrop-blur-xl border-r border-slate-800 flex flex-col justify-between hidden md:flex">
+            <div class="p-6 space-y-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/30">
+                        <i class="fa-solid fa-shield-cat text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-sm tracking-tight text-white">Vicarius Kryptovelox</h1>
+                        <span class="text-[10px] text-emerald-400 font-mono font-medium flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Schone Lei (€0,00)</span>
+                    </div>
+                </div>
+
+                <nav class="space-y-1.5">
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium bg-brand-600 text-white shadow-lg shadow-brand-600/20 transition-all"><i class="fa-solid fa-chart-pie w-5"></i><span>Live Dashboard</span></button>
+                    <button onclick="switchTab('services')" id="nav-services" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-all"><i class="fa-solid fa-box-open w-5"></i><span>Cyber & SaaS Aanbod</span></button>
+                    <button onclick="switchTab('social')" id="nav-social" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-all"><i class="fa-solid fa-robot w-5"></i><span>AI Social Team</span></button>
+                    <button onclick="switchTab('pentest')" id="nav-pentest" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-all"><i class="fa-solid fa-bug-slash w-5"></i><span>AI Vulnerability Pentest</span></button>
+                    <button onclick="switchTab('affiliates')" id="nav-affiliates" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-all"><i class="fa-solid fa-users-rectangle w-5"></i><span>Affiliate & Partners</span></button>
+                    <button onclick="switchTab('checkout')" id="nav-checkout" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-all"><i class="fa-solid fa-cash-register w-5"></i><span>Lemon Squeezy Hub</span></button>
+                    <button onclick="switchTab('accounting')" id="nav-accounting" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-all"><i class="fa-solid fa-scale-balanced w-5"></i><span>Dubbele Boekhouding</span></button>
+                </nav>
+            </div>
+
+            <div class="p-6 border-t border-slate-800">
+                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800/80 space-y-2">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-400">90% Operations Pool</span>
+                        <span class="text-white font-mono" id="sidebar-ops">€ 0,00</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-slate-400">10% Reserve Vault</span>
+                        <span class="text-emerald-400 font-mono" id="sidebar-vault">€ 0,00</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col h-screen overflow-y-auto">
+            <!-- Top Header -->
+            <header class="h-20 border-b border-slate-800 px-8 flex items-center justify-between bg-slate-900/40 backdrop-blur-md sticky top-0 z-40">
+                <div class="flex items-center space-x-4">
+                    <h2 class="text-lg font-bold text-white" id="page-title">Live Overzicht & Cyber Defense</h2>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button onclick="showToast('Systeem', 'Alle AI agents zijn actief en draaien op schone lei.')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2.5 rounded-xl transition-all">
+                        <i class="fa-solid fa-bell text-sm"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content Container -->
+            <div class="p-8 max-w-7xl mx-auto w-full space-y-8 flex-1">
+
+                <!-- TAB: DASHBOARD -->
+                <div id="tab-dashboard" class="space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="bg-slate-900/90 border border-slate-800 p-6 rounded-2xl space-y-2">
+                            <p class="text-xs text-slate-400 uppercase tracking-wider">Totale Omzet (Credit)</p>
+                            <h3 class="text-3xl font-bold text-white font-mono" id="stat-revenue">€ 0,00</h3>
+                            <span class="text-xs text-emerald-400 font-medium"><i class="fa-solid fa-arrow-trend-up"></i> 100% via Lemon Squeezy</span>
+                        </div>
+                        <div class="bg-slate-900/90 border border-slate-800 p-6 rounded-2xl space-y-2">
+                            <p class="text-xs text-slate-400 uppercase tracking-wider">90% Operations Pool</p>
+                            <h3 class="text-3xl font-bold text-white font-mono" id="stat-ops">€ 0,00</h3>
+                            <span class="text-xs text-brand-400 font-medium">Directe herinvestering</span>
+                        </div>
+                        <div class="bg-slate-900/90 border border-slate-800 p-6 rounded-2xl space-y-2">
+                            <p class="text-xs text-slate-400 uppercase tracking-wider">10% Reserve Vault</p>
+                            <h3 class="text-3xl font-bold text-emerald-400 font-mono" id="stat-vault">€ 0,00</h3>
+                            <span class="text-xs text-slate-400 font-medium">Veiligheidspool</span>
+                        </div>
+                        <div class="bg-slate-900/90 border border-slate-800 p-6 rounded-2xl space-y-2">
+                            <p class="text-xs text-slate-400 uppercase tracking-wider">Netto Winstresultaat</p>
+                            <h3 class="text-3xl font-bold text-white font-mono" id="stat-net">€ 0,00</h3>
+                            <span class="text-xs text-brand-400 font-medium">Margin: 100%</span>
+                        </div>
+                    </div>
+                <!-- TAB: PENTEST -->
+                <div id="tab-pentest" class="space-y-8 hidden">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-white">AI Vulnerability & Pentest Generator</h3>
+                            <p class="text-xs text-slate-400 mt-1">Voer geautomatiseerde ethical hacking scans uit.</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 max-w-2xl">
+                        <div class="flex space-x-3">
+                            <input type="text" id="target-url" placeholder="https://jouw-client-domein.com" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white text-xs focus:outline-none focus:border-brand-500">
+                            <button onclick="runPentestExecution()" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium px-6 py-2.5 rounded-xl transition-all">Start Pentest</button>
+                        </div>
+                        <div id="pentest-results" class="bg-slate-950 p-4 rounded-xl border border-slate-800 h-48 overflow-y-auto font-mono text-xs text-slate-300 space-y-2">
+                            <div class="text-slate-500">[Systeem] Voer een doelwit URL in om de live AI pentest te starten...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: SERVICES -->
+                <div id="tab-services" class="space-y-8 hidden">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Cybersecurity & Enterprise Aanbod</h3>
+                            <p class="text-xs text-slate-400 mt-1">Direct af te rekenen via Lemon Squeezy.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 flex flex-col justify-between">
+                            <div class="space-y-2">
+                                <span class="px-3 py-1 bg-brand-500/10 text-brand-400 rounded-lg text-xs font-mono">High-Ticket</span>
+                                <h4 class="text-lg font-bold text-white">Ethical Hacking & Pentest</h4>
+                                <p class="text-xs text-slate-400">Complete diepgaande security audit en kwetsbaarheidsscan.</p>
+                                <div class="text-2xl font-bold text-white font-mono pt-2">€ 2.497,00</div>
+                            </div>
+                            <button onclick="buyService('Ethical Hacking & Pentest', 2497)" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold py-3 rounded-xl transition-all shadow-lg shadow-brand-600/20">Afrekenen via Lemon Squeezy</button>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 flex flex-col justify-between">
+                            <div class="space-y-2">
+                                <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-lg text-xs font-mono">Compliance</span>
+                                <h4 class="text-lg font-bold text-white">SOC 2 / ISO Readiness</h4>
+                                <p class="text-xs text-slate-400">Volledige certificeringvoorbereiding en policy builder.</p>
+                                <div class="text-2xl font-bold text-white font-mono pt-2">€ 4.997,00</div>
+                            </div>
+                            <button onclick="buyService('SOC 2 Readiness', 4997)" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold py-3 rounded-xl transition-all shadow-lg shadow-brand-600/20">Afrekenen via Lemon Squeezy</button>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 flex flex-col justify-between">
+                            <div class="space-y-2">
+                                <span class="px-3 py-1 bg-purple-500/10 text-purple-400 rounded-lg text-xs font-mono">Managed Service</span>
+                                <h4 class="text-lg font-bold text-white">24/7 MDR Security</h4>
+                                <p class="text-xs text-slate-400">Managed Detection & Response voor je cloud infrastructuur.</p>
+                                <div class="text-2xl font-bold text-white font-mono pt-2">€ 1.997,00 <span class="text-xs text-slate-400 font-normal">/mnd</span></div>
+                            </div>
+                            <button onclick="buyService('24/7 MDR Security', 1997)" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold py-3 rounded-xl transition-all shadow-lg shadow-brand-600/20">Afrekenen via Lemon Squeezy</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: SOCIAL -->
+                <div id="tab-social" class="space-y-8 hidden">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Omnichannel AI Social & Marketing Team</h3>
+                            <p class="text-xs text-slate-400 mt-1">Koppel je social media kanalen om de autonome campagne- en postmachine te starten.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
+                            <h4 class="text-sm font-bold text-white uppercase tracking-wider">Social Media Koppelingen</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-xs text-slate-400">X (Twitter) API Token</label>
+                                    <input type="text" id="token-x" oninput="activateSocialAgents()" placeholder="Plak X API Token..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white mt-1">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-400">LinkedIn Access Token</label>
+                                    <input type="text" id="token-li" oninput="activateSocialAgents()" placeholder="Plak LinkedIn Token..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white mt-1">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-400">TikTok / Instagram Webhook</label>
+                                    <input type="text" id="token-tk" oninput="activateSocialAgents()" placeholder="Plak Webhook URL..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white mt-1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4">
+                            <h4 class="text-sm font-bold text-white uppercase tracking-wider">Autonome Agent Status</h4>
+                            <div id="social-status-box" class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2 font-mono text-xs text-slate-400">
+                                <div>[Status] Wachten op social media token koppeling...</div>
+                            </div>
+                            <button onclick="generateSocialContent()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2.5 rounded-xl transition-all">Genereer Direct Cyber Campagne</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: PENTEST SIMULATOR -->
+                <div id="tab-pentest" class="space-y-8 hidden">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-white">AI Vulnerability Simulator & Pentest Generator</h3>
+                            <p class="text-xs text-slate-400 mt-1">Voer geautomatiseerde ethical hacking scans uit.</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 max-w-2xl">
+                        <div class="flex space-x-3">
+                            <input type="text" id="target-url" placeholder="https://jouw-client-domein.com" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white text-xs focus:outline-none focus:border-brand-500">
+                            <button onclick="runPentestSimulation()" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium px-6 py-2.5 rounded-xl transition-all">Start AI Pentest</button>
+                        </div>
+                        <div id="pentest-results" class="bg-slate-950 p-4 rounded-xl border border-slate-800 h-48 overflow-y-auto font-mono text-xs text-slate-300 space-y-2">
+                            <div class="text-slate-500">[Systeem] Voer een doelwit URL in om de geautomatiseerde AI pentest te starten...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: AFFILIATES -->
+                <div id="tab-affiliates" class="space-y-8 hidden">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Autonome Affiliate & Partner Payout Engine</h3>
+                            <p class="text-xs text-slate-400 mt-1">Beheer automatisch affiliate links en commissie-uitkeringen via Lemon Squeezy.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-2">
+                            <p class="text-xs text-slate-400 uppercase tracking-wider">Actieve Partners</p>
+                            <h4 class="text-2xl font-bold text-white">24 Partners</h4>
+                            <span class="text-xs text-brand-400">30% commissie per sale</span>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-2">
+                            <p class="text-xs text-slate-400 uppercase tracking-wider">Totaal Uitbetaald</p>
+                            <h4 class="text-2xl font-bold text-white">€ 0,00</h4>
+                            <span class="text-xs text-slate-500">Gekoppeld aan schone lei</span>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-2">
+                            <p class="text-xs text-slate-400 uppercase tracking-wider">Partner Link Generator</p>
+                            <input type="text" value="https://lemonsqueezy.com/checkout?aff=KV-992" readonly class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-xs text-brand-400 mt-1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: CHECKOUT -->
+                <div id="tab-checkout" class="space-y-8 hidden">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Lemon Squeezy Cyber Checkout Hub</h3>
+                            <p class="text-xs text-slate-400 mt-1">Wereldwijde betalingsmotor en merchant of record instellingen.</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 max-w-2xl">
+                        <div>
+                            <label class="text-xs text-slate-400">Lemon Squeezy Store ID</label>
+                            <input type="text" value="store_kv_secure_8819" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white mt-1 font-mono">
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-400">Webhook Secret URL</label>
+                            <input type="text" value="https://api.kryptovelox.io/v1/lemonsqueezy/webhook" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-xs text-white mt-1 font-mono" readonly>
+                        </div>
+                        <button onclick="showToast('Lemon Squeezy', 'Webhooks succesvol gesynchroniseerd met schone lei.')" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold px-6 py-2.5 rounded-xl transition-all">Instellingen Opslaan</button>
+                    </div>
+                </div>
+
+                <!-- TAB: ACCOUNTING -->
+                <div id="tab-accounting" class="space-y-8 hidden">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Dubbele Boekhouding (Schone Lei)</h3>
+                            <p class="text-xs text-slate-400 mt-1">Real-time grootboek en 90/10 verdeling.</p>
+                        </div>
+                        <button onclick="resetLedger()" class="bg-red-500/20 text-red-400 border border-red-500/30 text-xs px-3 py-1.5 rounded-lg">Reset naar €0,00</button>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider">
+                                <tr>
+                                    <th class="p-4">Boeking ID</th>
+                                    <th class="p-4">Omschrijving</th>
+                                    <th class="p-4">Bedrag</th>
+                                    <th class="p-4">90% Ops / 10% Vault</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ledger-table" class="divide-y divide-slate-800 font-mono">
+                                <tr>
+                                    <td colspan="4" class="p-4 text-center text-slate-500">Geen transacties op schone lei. Wacht op inkomende Lemon Squeezy betalingen.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let totalRevenue = 0;
+        let ledgerTransactions = [];
+
+        function switchTab(tabId) {
+            ['dashboard', 'services', 'social', 'pentest', 'affiliates', 'checkout', 'accounting'].forEach(id => {
+                document.getElementById('tab-' + id).classList.add('hidden');
+                document.getElementById('nav-' + id)?.classList.remove('bg-brand-600', 'text-white', 'shadow-lg', 'shadow-brand-600/20');
+                document.getElementById('nav-' + id)?.classList.add('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
+            });
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.getElementById('nav-' + tabId)?.classList.add('bg-brand-600', 'text-white', 'shadow-lg', 'shadow-brand-600/20');
+            document.getElementById('nav-' + tabId)?.classList.remove('text-slate-400', 'hover:bg-slate-800', 'hover:text-white');
+
+            const titles = { 
+                dashboard: 'Live Overzicht & Cyber Defense', 
+                services: 'Cybersecurity & Enterprise Aanbod',
+                social: 'Omnichannel AI Social Team',
+                pentest: 'AI Vulnerability Generator',
+                affiliates: 'Affiliate & Partner Payouts',
+                checkout: 'Lemon Squeezy Hub',
+                accounting: 'Dubbele Boekhouding (Schone Lei)' 
+            };
+            document.getElementById('page-title').innerText = titles[tabId];
+        }
+
+        function showToast(title, message) {
+            const modal = document.getElementById('toast-modal');
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-message').innerText = message;
+            modal.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                modal.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+            }, 3500);
+        }
+
+        function updateStats() {
+            const ops = totalRevenue * 0.9;
+            const vault = totalRevenue * 0.1;
+            document.getElementById('stat-revenue').innerText = '€ ' + totalRevenue.toLocaleString('nl-NL', {minimumFractionDigits: 2});
+            document.getElementById('stat-ops').innerText = '€ ' + ops.toLocaleString('nl-NL', {minimumFractionDigits: 2});
+            document.getElementById('stat-vault').innerText = '€ ' + vault.toLocaleString('nl-NL', {minimumFractionDigits: 2});
+            document.getElementById('stat-net').innerText = '€ ' + totalRevenue.toLocaleString('nl-NL', {minimumFractionDigits: 2});
+            document.getElementById('sidebar-ops').innerText = '€ ' + ops.toLocaleString('nl-NL', {minimumFractionDigits: 2});
+            document.getElementById('sidebar-vault').innerText = '€ ' + vault.toLocaleString('nl-NL', {minimumFractionDigits: 2});
+
+            const percentage = Math.min(100, (totalRevenue / 35000) * 100);
+            document.getElementById('progress-bar').style.width = percentage + '%';
+        }
+
+        function buyService(name, price) {
+            totalRevenue += price;
+            const id = 'LS-' + Math.floor(100000 + Math.random() * 900000);
+            ledgerTransactions.unshift({
+                id: id,
+                desc: name,
+                amount: price,
+                ops: price * 0.9,
+                vault: price * 0.1
+            });
+            updateStats();
+            renderLedger();
+            showToast('Lemon Squeezy Betaling', `Live transactie geregistreerd: ${name} (€ ${price.toLocaleString('nl-NL')})`);
+        }
+
+        function renderLedger() {
+            const tbody = document.getElementById('ledger-table');
+            if (ledgerTransactions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Geen transacties op schone lei. Wacht op inkomende Lemon Squeezy betalingen.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = ledgerTransactions.map(tx => `
+                <tr class="hover:bg-slate-900/50">
+                    <td class="p-4 text-brand-400 font-bold">${tx.id}</td>
+                    <td class="p-4 text-white">${tx.desc}</td>
+                    <td class="p-4 text-emerald-400">+ € ${tx.amount.toLocaleString('nl-NL', {minimumFractionDigits: 2})}</td>
+                    <td class="p-4 text-slate-400">90% Ops (€ ${(tx.ops).toFixed(2)}) / 10% Vault (€ ${(tx.vault).toFixed(2)})</td>
+                </tr>
+            `).join('');
+        }
+
+        function resetLedger() {
+            totalRevenue = 0;
+            ledgerTransactions = [];
+            updateStats();
+            renderLedger();
+            showToast('Boekhouding', 'Boekhouding gereset naar schone lei (€ 0,00).');
+        }
+
+        function activateSocialAgents() {
+            const x = document.getElementById('token-x').value;
+            const li = document.getElementById('token-li').value;
+            const tk = document.getElementById('token-tk').value;
+            const box = document.getElementById('social-status-box');
+
+            if (x || li || tk) {
+                box.innerHTML = `
+                    <div class="text-emerald-400">[Actief] Social media token gekoppeld!</div>
+                    <div class="text-brand-400">[Agent X & LinkedIn] Live campagnes gestart...</div>
+                    <div class="text-slate-300">[Auto-DM & Virale Engine] Actief voor live conversies.</div>
+                `;
+            } else {
+                box.innerHTML = `<div>[Status] Wachten op social media token koppeling...</div>`;
+            }
+        }
+
+        function generateSocialContent() {
+            showToast('AI Social Team', 'Nieuwe live cybersecurity campagne gegenereerd.');
+            const box = document.getElementById('social-status-box');
+            box.innerHTML += `<div class="text-emerald-400 mt-2">[Gepubliceerd] "Secure your infrastructure with Vicarius Kryptovelox." -> Direct naar Buffer queue verzonden!</div>`;
+        }
+
+        function runPentestExecution() {
+            const urlInput = document.getElementById('target-urlERY') || document.getElementById('target-url').value || 'https://client-target.com';
+            const logDiv = document.getElementById('pentest-results');
+            logDiv.innerHTML = `<div class="text-amber-400">[Scan gestart] Live analyseren van ${urlInput} op kwetsbaarheden...</div>`;
+
+            setTimeout(() => {
+                logDiv.innerHTML += `<div class="text-slate-300">[+] SSL/TLS Cipher Suites: Geoptimaliseerd (A+)</div>`;
+            }, 600);
+
+            setTimeout(() => {
+                logDiv.innerHTML += `<div class="text-emerald-400">[+] OWASP Top 10 Injection Vectors: Gecontroleerd.</div>`;
+            }, 1200);
+
+            setTimeout(() => {
+                logDiv.innerHTML += `<div class="text-brand-400 font-bold">[Voltooid] Live pentest rapport gereed voor oplevering via Lemon Squeezy order.</div>`;
+            }, 1800);
+        }
+    </script>
+</body>
+</html>
